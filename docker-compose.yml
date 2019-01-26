@@ -2,30 +2,18 @@ version: '3'
 
 services:
   cluster-master:
-    image: splunk/splunk:7.0.3
-    # deploy:
-    #   resources:
-    #     limits:
-    #     cpus: 1
-    #     memory: 1G
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '0.50'
-    #       memory: 50M
-    #     reservations:
-    #       cpus: '0.25'
-    #       memory: 20M
+    build:
+      context: .
+      dockerfile: cluster-master/Dockerfile
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: cluster-master
     hostname: cluster-master
     volumes:
-      - ./cluster-master/system/server.conf:${SPLUNK_ETC_SYSTEM}/system/local/server.conf
-      - ./builds/cluster-master-etc/:${SPLUNK_ETC_SYSTEM}:z
-      - ./splunk-license/Splunk.License:${SPLUNK_ETC_SYSTEM}/licenses
-      - ./builds/cluster-master-var/var/log:${SPLUNK_VAR_LOG}:z
-    command: /opt/splunk/bin/splunk add licences ${SPLUNK_ETC_SYSTEM}/licences
+      - ./config/cluster-master-etc-local/:${SPLUNK_ETC_SYSTEM_LOCAL}
+      - ./config/cluster-master-var/var/log:${SPLUNK_VAR_LOG}:z
+
+
     ports:
       - 9000:8000
     labels:
@@ -34,7 +22,6 @@ services:
       splunk:
         aliases:
           - cluster-master
-
 
   deployment-server:
     image: splunk/splunk:7.0.3
@@ -48,9 +35,9 @@ services:
     container_name: deployment-server
     hostname: deployment-server
     volumes:
-      - ./builds/deployment-server-etc/:${SPLUNK_ETC_SYSTEM}:z
-      - ./builds/deployment-server-etc/deployment-apps:${SPLUNK_ETC_SYSTEM}:z
-      - ./builds/deployment-server-var/:${SPLUNK_VAR_LOG}:z
+      - ./config/deployment-server-etc-local/:${SPLUNK_ETC_SYSTEM}
+      - ./config/deployment-server-etc/deployment-apps:${SPLUNK_ETC_SYSTEM}:z
+      - ./config/deployment-server-var/:${SPLUNK_VAR_LOG}:z
     ports:
       - 10000:8000
     labels:
@@ -62,11 +49,6 @@ services:
 
   shc-member-01:
     image: splunk/splunk:7.0.3
-    # deploy:
-    #   resources:
-    #   limits:
-    #     cpus: 1
-    #     memory: 1G
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: shc-member-01
@@ -82,23 +64,18 @@ services:
           - shc-member-01
 
   idx-member-01:
-    image: splunk/splunk:7.0.3
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: 3
-    #       memory: 4G
+    build:
+      context: .
+      dockerfile: idx-member/Dockerfile
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: idx-member-01
     hostname: idx-member-01
     volumes:
-      - ./idx-member/server.conf:${SPLUNK_ETC_SYSTEM}/system/local/server.conf
-      - ./idx-member/web.conf:${SPLUNK_ETC_SYSTEM}/system/local/web.conf
-      - ./builds/idx-member:${SPLUNK_ETC_SYSTEM}:z
-      - ./builds/idx-member-01-etc:${SPLUNK_ETC_SYSTEM}:z
-      - ./builds/idx-member-01-var:${SPLUNK_VAR_LOG}:z
-      - ./builds/splunkindexes/idx-member-01:/apps/splunkindexes:z
+      - ./config/idx-member:${SPLUNK_ETC_SYSTEM}:z
+      - ./config/idx-member-01-etc-local:${SPLUNK_ETC_SYSTEM_LOCAL}:z
+      - ./config/idx-member-01-var:${SPLUNK_VAR_LOG}:z
+      - ./config/splunkindexes/idx-member-01:/apps/splunkindexes:z
     ports:
       - 8003:8000
     labels:
@@ -108,21 +85,16 @@ services:
         aliases:
           - idx-member-01
   idx-member-02:
-    image: splunk/splunk:7.0.3
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: 3
-    #       memory: 4G
+    build:
+      context: .
+      dockerfile: idx-member/Dockerfile
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: idx-member-02
     volumes:
-      - ./idx-member/server.conf:${SPLUNK_ETC_SYSTEM}/system/local/server.conf
-      - ./idx-member/web.conf:${SPLUNK_ETC_SYSTEM}/system/local/web.conf
-      - ./builds/idx-member-02-etc/:${SPLUNK_ETC_SYSTEM}:z
-      - ./builds/idx-member-02-var/:${SPLUNK_VAR_LOG}:z
-      - ./builds/splunkindexes/idx-member-02:/apps/splunkindexes:z
+      - ./config/idx-member-02-etc-local/:${SPLUNK_ETC_SYSTEM_LOCAL}:z
+      - ./config/idx-member-02-var/:${SPLUNK_VAR_LOG}:z
+      - ./config/splunkindexes/idx-member-02:/apps/splunkindexes:z
     hostname: idx-member-02
     ports:
       - 8004:8000
@@ -134,21 +106,16 @@ services:
           - idx-member-02
 
   idx-member-03:
-    image: splunk/splunk:7.0.3
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: 3
-    #       memory: 4G
+    build:
+      context: .
+      dockerfile: idx-member/Dockerfile
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: idx-member-03
     volumes:
-      - ./idx-member/server.conf:${SPLUNK_ETC_SYSTEM}/system/local/server.conf
-      - ./idx-member/web.conf:${SPLUNK_ETC_SYSTEM}/system/local/web.conf
-      - ./builds/idx-member-03-etc:${SPLUNK_ETC_SYSTEM}:z
-      - ./builds/idx-member-03-var:${SPLUNK_VAR_LOG}:z
-      - ./builds/splunkindexes/idx-member-03:/apps/splunkindexes:z
+      - ./config/idx-member-03-etc-local:${SPLUNK_ETC_SYSTEM_LOCAL}:z
+      - ./config/idx-member-03-var:${SPLUNK_VAR_LOG}:z
+      - ./config/splunkindexes/idx-member-03:/apps/splunkindexes:z
     hostname: idx-member-03
     ports:
       - 8005:8000
