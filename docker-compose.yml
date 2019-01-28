@@ -8,8 +8,9 @@ services:
     container_name: cluster-master
     hostname: cluster-master
     volumes:
-      - .config/cluster-master-etc/:${SPLUNK_ETC_SYSTEM}
-      - .config/cluster-master-var/var/log:${SPLUNK_VAR_LOG}:z
+      - ./config/cluster-master-etc/:${SPLUNK_ETC_SYSTEM}
+      - ./config/cluster-master-var/var/log:${SPLUNK_VAR_LOG}:z
+      - ./cluster-master:/opt/splunk/etc/apps/cluster-master:z 
 
 
     ports:
@@ -33,9 +34,9 @@ services:
     container_name: deployment-server
     hostname: deployment-server
     volumes:
-      - .config/deployment-server-etc/:${SPLUNK_ETC_SYSTEM}:z
-      - .config/deployment-server-etc/deployment-apps:${SPLUNK_ETC_SYSTEM}:z
-      - .config/deployment-server-var/:${SPLUNK_VAR_LOG}:z
+      - ./config/deployment-server-etc/:${SPLUNK_ETC_SYSTEM}:z
+      - ./config/deployment-server-etc/deployment-apps:${SPLUNK_ETC_SYSTEM}:z
+      - ./config/deployment-server-var/:${SPLUNK_VAR_LOG}:z
     ports:
       - 10000:8000
     labels:
@@ -68,9 +69,10 @@ services:
     container_name: idx-member-01
     hostname: idx-member-01
     volumes:
-      - .config/idx-member-etc:${SPLUNK_ETC_SYSTEM}:z
-      - .config/idx-member-01-var:${SPLUNK_VAR_LOG}:z
-      - .config/splunkindexes/idx-member-01:/apps/splunkindexes:z
+      - ./config/idx-member-etc:${SPLUNK_ETC_SYSTEM}:z
+      - ./config/idx-member-01-var:${SPLUNK_VAR_LOG}:z
+      - ./config/splunkindexes/idx-member-01:/apps/splunkindexes:z
+      - ./idx-member:/opt/splunk/etc/apps/idx-member:z
     ports:
       - 8003:8000
     labels:
@@ -86,9 +88,10 @@ services:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: idx-member-02
     volumes:
-      - .config/idx-member-01-etc/:${SPLUNK_ETC_SYSTEM}:z
-      - .config/idx-member-02-var/:${SPLUNK_VAR_LOG}:z
-      - .config/splunkindexes/idx-member-02:/apps/splunkindexes:z
+      - ./config/idx-member-01-etc/:${SPLUNK_ETC_SYSTEM}:z
+      - ./config/idx-member-02-var/:${SPLUNK_VAR_LOG}:z
+      - ./config/splunkindexes/idx-member-02:/apps/splunkindexes:z
+      - ./idx-member:/opt/splunk/etc/apps/idx-member:z
     hostname: idx-member-02
     ports:
       - 8004:8000
@@ -121,6 +124,7 @@ services:
 
 
 volumes:
+   config:
    cluster-master-etc:
    idx-member:
 networks:
