@@ -2,7 +2,7 @@ version: '3'
 
 services:
   cluster-master:
-    image: splunk/splunk:7.2
+    build: ./docker
     environment:
       SPLUNK_START_ARGS: --accept-license --answer-yes
     container_name: cluster-master
